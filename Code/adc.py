@@ -6,6 +6,7 @@
 
 import smbus
 import time
+import RPi.GPIO as GPIO
 
 address = 0x48 #address of PCF8591
 bus = smbus.SMBus(1)
@@ -14,6 +15,12 @@ wet = 120
 moist = 145
 air = 200
 water = 90
+relayPin = 40
+
+def setup():
+	print('Program is starting...')
+	GPIO.setmode(GPIO.BOARD)
+	GPIO.setup(relayPin, GPIO.OUT)
 
 def analogRead(chn): #read ADC value from chn 0,1,2, or 3
     value = bus.read_byte_data(address, cmd+chn)
@@ -33,10 +40,12 @@ def loop():
         time.sleep(1) #reads value every minute
 
 def destroy():
+	GPIO.output(relayPin, GPIO.LOW)
+	GPIO.cleanup()
     bus.close()
 
 if __name__=='__main__':
-    print('Program is starting...')
+    setup()
     try:
         loop()
     except KeyboardInterrupt:
