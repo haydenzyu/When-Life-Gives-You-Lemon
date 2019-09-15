@@ -16,6 +16,7 @@ moist = 145
 air = 200
 water = 90
 relayPin = 40
+one_day = 1
 
 def setup():
 	print('Program is starting...')
@@ -38,6 +39,7 @@ def loop():
             state = 'Too wet'
         print('ADC value: %d, Voltage: %.2f, %s' %(value, voltage, state)) #print value to terminal
         time.sleep(1) #reads value every minute
+		GPIO.output(relayPin, GPIO.HIGH)
 
 def destroy():
 	GPIO.output(relayPin, GPIO.LOW)
