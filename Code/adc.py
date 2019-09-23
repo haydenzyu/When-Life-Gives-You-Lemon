@@ -12,7 +12,7 @@ address = 0x48 #address of PCF8591
 bus = smbus.SMBus(1)
 cmd = 0x40 #command
 wet = 120
-moist = 151
+moist = 145
 air = 200
 water = 90
 relayPin = 38
@@ -42,6 +42,8 @@ def loop():
             time.sleep(5)
             GPIO.output(relayPin, False)
             time.sleep(1)
+            value = analogRead(0) #read the ADC value of channel 0
+            print('ADC value: %d, Voltage: %.2f, %s' %(value, voltage, state)) #print value to terminal
         else:
             state = 'Too wet'
             GPIO.output(relayPin, False)
