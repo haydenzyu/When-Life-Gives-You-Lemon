@@ -7,12 +7,13 @@
 import smbus
 import time
 import RPi.GPIO as GPIO
+import datetime
 
 address = 0x48 #address of PCF8591
 bus = smbus.SMBus(1)
 cmd = 0x40 #command
 wet = 120
-moist = 145
+moist = 135
 air = 200
 water = 90
 relayPin = 38
@@ -31,25 +32,41 @@ def analogRead(chn): #read ADC value from chn 0,1,2, or 3
 def loop():
     GPIO.output(relayPin, False)
     while True:
-        value = analogRead(0) #read the ADC value of channel 0
-        voltage = value/255.0 *3.3 #calculate the voltage value
-        if value > wet and value <= moist:
+        for int in range(5):
+            value = analogRead(0) #read the ADC value of channel 0
+            value2 = analogRead(1)
+        voltage = (value+value2)/255.0 *3.3 #calculate the voltage value
+        average = (value+value2)/2
+        
+        if average > wet and average <= moist:
             state = 'Good'
             GPIO.output(relayPin, False)
-        elif value > moist:
+        elif average > moist:
             state = 'Need Water'
+            f = open("output.txt", "a+")
+            currentDT = datetime.datetime.now()
+            print('ADC value: %d, Voltage: %.2f, %s' %(average, voltage, state)) #print value to terminal
+            f.write("Water at %s, %s\n" %(str(currentDT), str(average))) 
             GPIO.output(relayPin, True)
-            time.sleep(5)
+            time.sleep(8)
             GPIO.output(relayPin, False)
-            time.sleep(1)
-            value = analogRead(0) #read the ADC value of channel 0
-            print('ADC value: %d, Voltage: %.2f, %s' %(value, voltage, state)) #print value to terminal
+            time.sleep(2)
+            for int in range(5):
+                value = analogRead(0) #read the ADC value of channel 0
+                value2 = analogRead(1)
+                time.sleep(2)
+            average = (value+value2)/2
+            print('ADC value: %d, Voltage: %.2f, %s' %(average, voltage, state)) #print value to terminal
+            f.close()
         else:
             state = 'Too wet'
             GPIO.output(relayPin, False)
-        print('ADC value: %d, Voltage: %.2f, %s' %(value, voltage, state)) #print value to terminal
+            
+        print('ADC value: %d, Voltage: %.2f, %s' %(average, voltage, state)) #print value to terminal
+        
         time.sleep(1)
-
+        #print(value, value2)
+    
 def destroy():
     GPIO.output(relayPin, False)
     GPIO.cleanup()
