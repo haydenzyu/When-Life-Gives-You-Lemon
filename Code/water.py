@@ -30,9 +30,9 @@ def analogRead(chn): #read ADC value from chn 0,1,2, or 3
 
 def loop():
     while(1):
-        time.sleep(1)
-        GPIO.output(relayPin, True)
-        time.sleep(3)
+        #time.sleep(1)
+        #GPIO.output(relayPin, True)
+        #time.sleep(10)
         GPIO.output(relayPin, False)
 
 def destroy():

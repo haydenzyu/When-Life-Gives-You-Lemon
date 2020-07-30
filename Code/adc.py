@@ -12,8 +12,8 @@ import datetime
 address = 0x48 #address of PCF8591
 bus = smbus.SMBus(1)
 cmd = 0x40 #command
-wet = 120
-moist = 135
+wet = 90
+moist = 115
 air = 200
 water = 90
 relayPin = 38
@@ -47,6 +47,7 @@ def loop():
             currentDT = datetime.datetime.now()
             print('ADC value: %d, Voltage: %.2f, %s' %(average, voltage, state)) #print value to terminal
             f.write("Water at %s, %s\n" %(str(currentDT), str(average))) 
+            time.sleep(2)
             GPIO.output(relayPin, True)
             time.sleep(8)
             GPIO.output(relayPin, False)
